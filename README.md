@@ -5,7 +5,7 @@ A simple program to play and convert images for now only playing with colors
 
 ## Documentation
 
-Clone the repo and just go run -file="pathToImage" / go run -help to flag info
+Clone the repo and just go run -file="pathToImage" / go run -help for flag info
 
 
 ## Authors
