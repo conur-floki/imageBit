@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"image"
 	"image/color"
 	"image/jpeg"
@@ -10,34 +11,44 @@ import (
 )
 
 func main() {
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
 	if len(os.Args) < 2 {
 		log.Fatalln("Image path is required")
 	}
 
-	imgPath := os.Args[1]
+	imgPath := flag.String("file", "", "The path to the file")
 
-	file, err := os.Open(imgPath)
+	flag.Parse()
+
+	if parsed := flag.Parsed(); !parsed {
+		infoLog.Printf("Error opening file: %s", *imgPath)
+	}
+
+	file, err := os.Open(*imgPath)
 	if err != nil {
-		panic(err)
+		errorLog.Fatal(err)
 	}
 
 	img, _, err := image.Decode(file)
 	if err != nil {
-		log.Fatalln(err)
+		errorLog.Fatal(err)
 	}
 
+	infoLog.Printf("Converting img to greyscale")
 	greyImg := toGreyScale(img)
 
 	outputFile, err := os.Create("output.jpg")
 	if err != nil {
-		log.Fatalln(err)
+		errorLog.Fatal(err)
 	}
 
 	defer outputFile.Close()
 
 	err = jpeg.Encode(outputFile, greyImg, nil)
 	if err != nil {
-		log.Fatalln(err)
+		errorLog.Fatal(err)
 	}
 }
 
